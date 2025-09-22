@@ -68,22 +68,6 @@ class CourseCategoryPolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, CourseCategory $courseCategory): bool
-    {
-        return $this->delete($user, $courseCategory);
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, CourseCategory $courseCategory): bool
-    {
-        return $user->can('delete.course.categories');
-    }
-
-    /**
      * Determine whether the user can set as primary category.
      */
     public function setPrimary(User $user, CourseCategory $courseCategory): bool

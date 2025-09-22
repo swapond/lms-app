@@ -14,7 +14,7 @@ class CheckPermission
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $permission) 
+    public function handle(Request $request, Closure $next, string $permission)
     {
         // Early return if no user
         if (! $request->user()) {

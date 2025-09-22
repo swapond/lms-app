@@ -12,7 +12,7 @@ class CertificatePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view.certificates') || $user->can('view_own.certificates');
+        return $user->can('view.certificates') || $user->can('view.own.certificates');
     }
 
     /**
@@ -26,7 +26,7 @@ class CertificatePolicy
         }
 
         // Students can view their own certificates
-        if ($user->can('view_own.certificates')) {
+        if ($user->can('view.own.certificates')) {
             return $certificate->user_id === $user->id;
         }
 
@@ -83,26 +83,10 @@ class CertificatePolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Certificate $certificate): bool
-    {
-        return $this->delete($user, $certificate);
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Certificate $certificate): bool
-    {
-        return $user->can('delete.certificates');
-    }
-
-    /**
      * Determine whether the user can view their own certificates.
      */
     public function viewOwn(User $user, Certificate $certificate): bool
     {
-        return $user->can('view_own.certificates') && $certificate->user_id === $user->id;
+        return $user->can('view.own.certificates') && $certificate->user_id === $user->id;
     }
 }

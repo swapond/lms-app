@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
-    use HasFactory, HasUuids, Sluggable;
+    use HasFactory, HasUuids, Sluggable, SoftDeletes;
 
     protected $fillable = [
         'instructor_id',

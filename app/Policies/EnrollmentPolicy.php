@@ -12,7 +12,7 @@ class EnrollmentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view.enrollments') || $user->can('view_own.enrollments');
+        return $user->can('view.enrollments') || $user->can('view.own.enrollments');
     }
 
     /**
@@ -26,7 +26,7 @@ class EnrollmentPolicy
         }
 
         // Students can view their own enrollments
-        if ($user->can('view_own.enrollments')) {
+        if ($user->can('view.own.enrollments')) {
             return $enrollment->user_id === $user->id;
         }
 
@@ -83,26 +83,10 @@ class EnrollmentPolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Enrollment $enrollment): bool
-    {
-        return $this->delete($user, $enrollment);
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Enrollment $enrollment): bool
-    {
-        return $user->can('delete.enrollments');
-    }
-
-    /**
      * Determine whether the user can view their own enrollments.
      */
     public function viewOwn(User $user, Enrollment $enrollment): bool
     {
-        return $user->can('view_own.enrollments') && $enrollment->user_id === $user->id;
+        return $user->can('view.own.enrollments') && $enrollment->user_id === $user->id;
     }
 }

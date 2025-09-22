@@ -60,6 +60,6 @@ class CategoryPolicy
      */
     public function forceDelete(User $user, Category $category): bool
     {
-        return $user->can('delete.categories');
+        return $user->can('force.delete.categories');
     }
 }

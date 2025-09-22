@@ -68,32 +68,6 @@ class CourseSectionPolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, CourseSection $courseSection): bool
-    {
-        // Super admin and admin can restore any course section
-        if ($user->can('restore.course.sections')) {
-            return true;
-        }
-
-        // Instructors can only restore sections of their own courses
-        if ($user->can('manage.own.course.sections')) {
-            return $courseSection->course->instructor_id === $user->id;
-        }
-
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, CourseSection $courseSection): bool
-    {
-        return $user->can('delete.course.sections');
-    }
-
-    /**
      * Determine whether the user can manage their own course sections.
      */
     public function manageOwn(User $user, CourseSection $courseSection): bool
