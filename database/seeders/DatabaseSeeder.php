@@ -10,7 +10,6 @@ use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -40,7 +39,7 @@ class DatabaseSeeder extends Seeder
         $instructors = User::factory(5)->create();
         $students = User::factory(20)->create();
 
-        // Create parent categories
+        // Create parent categories - slug will auto-generate
         $parentCategories = [
             'Web Development',
             'Mobile Development',
@@ -52,12 +51,13 @@ class DatabaseSeeder extends Seeder
 
         $createdParentCategories = [];
         foreach ($parentCategories as $index => $categoryName) {
-            $createdParentCategories[] = Category::factory()->create([
-                'name' => $categoryName,
-                'slug' => Str::slug($categoryName),
-                'order_index' => $index + 1,
-                'is_published' => true,
-            ]);
+            $createdParentCategories[] = Category::firstOrCreate(
+                ['name' => $categoryName],
+                [
+                    'order_index' => $index + 1,
+                    'is_published' => true,
+                ]
+            );
         }
 
         // Create subcategories
@@ -71,19 +71,20 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($subcategories as $parentName => $subs) {
-            $parent = $createdParentCategories->firstWhere('name', $parentName)->first();
+            $parent = collect($createdParentCategories)->firstWhere('name', $parentName);
             foreach ($subs as $index => $subName) {
-                Category::factory()->create([
-                    'name' => $subName,
-                    'slug' => Str::slug($subName),
-                    'parent_id' => $parent->id,
-                    'order_index' => $index + 1,
-                    'is_published' => true,
-                ]);
+                Category::firstOrCreate(
+                    ['name' => $subName],
+                    [
+                        'parent_id' => $parent->id,
+                        'order_index' => $index + 1,
+                        'is_published' => true,
+                    ]
+                );
             }
         }
 
-        // Create courses with the admin and instructors
+        // Create courses - slug will auto-generate from name
         $allInstructors = collect([$admin])->concat($instructors);
 
         $courses = collect();
@@ -96,13 +97,12 @@ class DatabaseSeeder extends Seeder
         // Assign categories to courses
         $allCategories = Category::all();
         $courses->each(function ($course) use ($allCategories) {
-            // Assign 1-3 categories per course
             $categoryCount = rand(1, 3);
             $selectedCategories = $allCategories->random($categoryCount);
 
             foreach ($selectedCategories as $index => $category) {
                 $course->categories()->attach($category->id, [
-                    'is_primary' => $index === 0, // First one is primary
+                    'is_primary' => $index === 0,
                     'order_index' => $index + 1,
                 ]);
             }
@@ -125,7 +125,6 @@ class DatabaseSeeder extends Seeder
         $allStudents = collect([$testUser])->concat($students);
 
         $allStudents->each(function ($student) use ($publishedCourses) {
-            // Each student enrolls in 1-5 courses
             $enrollmentCount = rand(1, 5);
             $selectedCourses = $publishedCourses->random(min($enrollmentCount, $publishedCourses->count()));
 
@@ -137,7 +136,6 @@ class DatabaseSeeder extends Seeder
                     'payment_method' => $course->price > 0 ? 'credit_card' : 'free',
                 ]);
 
-                // Create certificates for completed enrollments
                 if ($enrollment->status === 'completed') {
                     Certificate::factory()->create([
                         'user_id' => $student->id,

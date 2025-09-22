@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
-    use HasFactory, HasUuids; // CRITICAL: This is needed for UUID support
+    use HasFactory, HasUuids, Sluggable;
 
     protected $fillable = [
         'instructor_id',
@@ -30,6 +31,15 @@ class Course extends Model
         'is_featured',
         'duration_minutes',
     ];
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => ['name'],
+            ],
+        ];
+    }
 
     protected function casts(): array
     {

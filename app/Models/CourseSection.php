@@ -31,26 +31,4 @@ class CourseSection extends Model
     {
         return $this->belongsTo(Course::class);
     }
-
-    // Scopes
-    public function scopePublished($query)
-    {
-        return $query->where('is_published', true);
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('order_index');
-    }
-
-    // Helper Methods
-    public function isPublished(): bool
-    {
-        return $this->is_published;
-    }
-
-    public function getNextOrderIndex(): int
-    {
-        return $this->where('course_id', $this->course_id)->max('order_index') + 1;
-    }
 }
